@@ -1,10 +1,11 @@
-package farn.recobbled_modloader.mixin;
+package farn.recobbled_modloader.mixin.forge;
 
 import net.minecraft.src.RenderBlocks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
+@SuppressWarnings("MixinAnnotationTarget")
 @Pseudo
 @Mixin(value = RenderBlocks.class, priority = 1001)
 public interface RenderBlockAccessor {

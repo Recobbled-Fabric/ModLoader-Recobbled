@@ -1,6 +1,6 @@
 
 
-package farn.recobbled_modloader.mixin;
+package farn.recobbled_modloader.mixin.forge;
 
 import net.minecraft.src.Tessellator;
 import org.spongepowered.asm.mixin.Mixin;

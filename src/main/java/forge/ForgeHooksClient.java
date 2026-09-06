@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import farn.recobbled_modloader.mixin.TessellatorAccessor;
+import farn.recobbled_modloader.mixin.forge.TessellatorAccessor;
 import net.minecraft.src.*;
 import org.lwjgl.opengl.GL11;
 
@@ -100,16 +100,16 @@ public class ForgeHooksClient {
 		TessellatorAccessor.setRenderingWorldRenderer(false);
 	}
 
-	public static void beforeBlockRender(Block var0, RenderBlocks var1) {
-		if(var0 instanceof ITextureProvider && var1.overrideBlockTexture == -1) {
-			ITextureProvider var2 = (ITextureProvider)var0;
+	public static void beforeBlockRender(Block block, RenderBlocks var1) {
+		if(block instanceof ITextureProvider && var1.overrideBlockTexture == -1) {
+			ITextureProvider var2 = (ITextureProvider)block;
 			bindTexture(var2.getTextureFile(), 0);
 		}
 
 	}
 
-	public static void afterBlockRender(Block var0, RenderBlocks var1) {
-		if(var0 instanceof ITextureProvider && var1.overrideBlockTexture == -1) {
+	public static void afterBlockRender(Block block, RenderBlocks var1) {
+		if(block instanceof ITextureProvider && var1.overrideBlockTexture == -1) {
 			unbindTexture();
 		}
 

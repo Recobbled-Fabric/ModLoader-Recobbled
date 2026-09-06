@@ -1,4 +1,4 @@
-package farn.recobbled_modloader.mixin;
+package farn.recobbled_modloader.mixin.forge;
 
 import com.llamalad7.mixinextras.expression.Definition;
 import com.llamalad7.mixinextras.expression.Expression;

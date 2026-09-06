@@ -1,4 +1,4 @@
-package farn.recobbled_modloader.mixin;
+package farn.recobbled_modloader.mixin.modloader;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;

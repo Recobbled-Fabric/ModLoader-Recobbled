@@ -1,4 +1,4 @@
-package farn.recobbled_modloader.mixin;
+package farn.recobbled_modloader.mixin.modloader;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.src.BlockDispenser;
@@ -7,7 +7,6 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.World;
 import org.spongepowered.asm.mixin.Mixin;
 
-import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;

@@ -1,6 +1,6 @@
 package net.minecraft.src;
 
-
+@Deprecated
 public class ItemTexture extends Item implements IItemTexture {
     public String texturePath;
 

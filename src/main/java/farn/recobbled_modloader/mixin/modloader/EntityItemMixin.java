@@ -1,4 +1,4 @@
-package farn.recobbled_modloader.mixin;
+package farn.recobbled_modloader.mixin.modloader;
 
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.EntityPlayer;

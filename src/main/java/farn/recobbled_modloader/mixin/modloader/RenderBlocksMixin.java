@@ -1,9 +1,10 @@
-package farn.recobbled_modloader.mixin;
+package farn.recobbled_modloader.mixin.modloader;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import farn.recobbled_modloader.mixin.forge.TessellatorAccessor;
 import farn.recobbled_modloader.mixin_config.MakePublic;
 import net.minecraft.src.*;
 import org.spongepowered.asm.mixin.Mixin;
@@ -105,5 +106,22 @@ public class RenderBlocksMixin {
     @WrapOperation(method = {"renderStandardBlockWithAmbientOcclusion", "renderStandardBlockWithColorMultiplier"}, at = @At(value = "FIELD", target = "Lnet/minecraft/src/RenderBlocks;fancyGrass:Z"))
     private boolean modloader$ReplaceFancyGraphicsWithGrassFix(Operation<Boolean> original) {
         return ((TessellatorAccessor) Tessellator.instance).getDefaultTexture() && cfgGrassFix;
+    }
+
+    @WrapOperation(method = "renderBlockRedstoneWire", at = {
+            @At(value = "INVOKE", target = "Lnet/minecraft/src/Tessellator;setColorOpaque_F(FFF)V", ordinal = 0),
+            @At(value = "INVOKE", target = "Lnet/minecraft/src/Tessellator;setColorOpaque_F(FFF)V", ordinal = 3),
+            @At(value = "INVOKE", target = "Lnet/minecraft/src/Tessellator;setColorOpaque_F(FFF)V", ordinal = 6),
+            @At(value = "INVOKE", target = "Lnet/minecraft/src/Tessellator;setColorOpaque_F(FFF)V", ordinal = 8),
+            @At(value = "INVOKE", target = "Lnet/minecraft/src/Tessellator;setColorOpaque_F(FFF)V", ordinal = 10),
+    })
+    private void modloader$RenderRedstoneColor(Tessellator instance, float g, float b, float v, Operation<Void> original,
+                                               @Local(ordinal = 3) int l1,
+                                               @Local(ordinal = 0) float f1) {
+        float[] color = redstoneColors[l1];
+        float f3 = color[0];
+        float f4 = color[1];
+        float f5 = color[2];
+        original.call(instance, f1 * f3, f1 * f4, f1 * f5);
     }
 }
