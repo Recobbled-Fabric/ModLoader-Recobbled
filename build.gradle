@@ -53,6 +53,7 @@ unimined {
 
                 jarClasses('custom_jar/modloader-recobbled-1.6.jar').each(mapClass)
                 jarClasses('custom_jar/recobbled-1.6_03.jar').each(mapClass)
+                ["PlayerAPI", "PlayerBase"].each(mapClass)
             }
         }
 
