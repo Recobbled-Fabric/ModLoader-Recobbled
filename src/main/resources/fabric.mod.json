@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 1,
+	"id": "recobbled_modloader",
+	"version": "${version}",
+	"name": "ModLoader Recobbled",
+	"description": "Port of ModLoader, ModLoaderMP And Some part of forge to minecraft Recobbled",
+	"authors": [
+		"farnfarn02",
+		"Risugami",
+		"Jamioflan",
+		"Eloraam",
+		"FlowerChild",
+		"Hawkye",
+		"MALfunction84",
+		"Scokeev9",
+		"SpaceToad"
+	],
+	"icon": "assets/recobbled_modloader/logo.png",
+	"license": "MIT",
+	"environment": "client",
+	"accessWidener": "modloadermp.accessWidener",
+	"depends": {
+		"minecraft": "1.0.0-beta.7.3"
+	},
+	"mixins": [
+		"modloadermp.mixin.json"
+	]
+}
