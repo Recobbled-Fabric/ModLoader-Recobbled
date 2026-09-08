@@ -247,7 +247,7 @@ public class PlayerAPI {
 			var1 = ((PlayerEntityExtension)var0).getPlayerBases().get(var3).getEntityBrightness(var1, var2);
 		}
 
-		return var1;
+		return var2;
 	}
 
 	public static boolean pushOutOfBlocks(EntityPlayerSP var0, double var1, double var3, double var5) {

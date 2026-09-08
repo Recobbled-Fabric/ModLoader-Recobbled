@@ -24,9 +24,4 @@ public interface TessellatorAccessor {
 	@Accessor(value = "renderingWorldRenderer", remap = false)
 	static void setRenderingWorldRenderer(boolean value) {
 	}
-
-	@Invoker("<init>")
-	static Tessellator createTessellator(int id) {
-		throw new AssertionError();
-	}
 }
