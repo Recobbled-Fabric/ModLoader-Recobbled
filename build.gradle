@@ -1,4 +1,5 @@
 plugins {
+    id 'maven-publish'
     id 'java'
     id 'xyz.wagyourtail.unimined' version '1.4.2-SNAPSHOT'
 }
@@ -6,6 +7,12 @@ plugins {
 group = project.property('group')
 version = project.property('version')
 base.archivesName = project.property('modname')
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -51,9 +58,25 @@ unimined {
                     c(name, path, path)
                 }
 
-                jarClasses('custom_jar/modloader-recobbled-1.6.jar').each(mapClass)
+                //jarClasses('custom_jar/modloader-recobbled-1.6.jar').each(mapClass)
+                //["PlayerAPI", "PlayerBase"].each(mapClass)
                 jarClasses('custom_jar/recobbled-1.6_03.jar').each(mapClass)
-                ["PlayerAPI", "PlayerBase"].each(mapClass)
+
+                fileTree(
+                        dir: project.file('src/main/java/net/minecraft/src'),
+                        include: '**/*.java'
+                ).each { file ->
+                    def relative = file.absolutePath
+                            .substring(
+                                    project.file('src/main/java/net/minecraft/src')
+                                            .absolutePath.length() + 1
+                            )
+                            .replace(File.separator, '/')
+
+                    relative = relative.substring(0, relative.length() - 5)
+
+                    mapClass(relative)
+                }
             }
         }
 
@@ -73,6 +96,7 @@ unimined {
 
 dependencies {
     jarMod name: "recobbled", version: "1.6_03"
+    implementation(include(name: "GuiAPILib", version: "1.0"))
 }
 
 processResources {
@@ -189,4 +213,19 @@ class FabricWithoutIntermediary extends OfficialFabricMinecraftTransformer{
         return null;
     }
 
+}
+
+publishing {
+    repositories {
+        mavenLocal()
+    }
+
+    publications {
+        create("mavenJava", MavenPublication) {
+            //noinspection GrUnresolvedAccess
+            artifactId = base.archivesName.get()
+            //noinspection GrUnresolvedAccess, GroovyAssignabilityCheck
+            from components.java
+        }
+    }
 }
