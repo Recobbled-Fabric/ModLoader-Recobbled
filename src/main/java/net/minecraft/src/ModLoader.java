@@ -551,6 +551,7 @@ public final class ModLoader {
 			System.out.println("ModLoader Beta 1.7.3 Initializing...");
 			File var16 = new File(ModLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 			modDir.mkdirs();
+			readModsFromEntrypoint();
 			readFromModFolder(modDir);
 			readFromClassPath(var16);
 			System.out.println("Done.");
