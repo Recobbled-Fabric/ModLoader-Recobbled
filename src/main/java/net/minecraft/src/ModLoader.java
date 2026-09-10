@@ -868,9 +868,7 @@ public final class ModLoader {
 
 	}
 
-	private static void readFromModFolder(File folder) throws IOException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException {
-		if(ModLoaderFix.getMLPackage() != null)
-			folder = new File(folder, ModLoaderFix.getMLPackage().replace('.', File.separatorChar));
+	private static void readFromModFolder(File folder) throws IOException, IllegalArgumentException, SecurityException {
 		ClassLoader loader = FabricLauncherBase.getLauncher().getTargetClassLoader();
 		if(!folder.isDirectory()) {
 			throw new IllegalArgumentException("folder must be a Directory.");
