@@ -14,6 +14,8 @@ java {
     }
 }
 
+def test = "test"
+
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -106,7 +108,6 @@ unimined {
 dependencies {
     jarMod name: "recobbled", version: "1.6_03"
     implementation(include(name: "GuiAPILib", version: "1.0"))
-    implementation("xyz.wagyourtail.unimined:unimined:1.4.2-SNAPSHOT")
 }
 
 processResources {
@@ -135,9 +136,7 @@ publishing {
 
     publications {
         create("mavenJava", MavenPublication) {
-            //noinspection GrUnresolvedAccess
             artifactId = base.archivesName.get()
-            //noinspection GrUnresolvedAccess, GroovyAssignabilityCheck
             from components.java
         }
     }
@@ -189,7 +188,6 @@ def jarClasses(File file) {
         zip.entries().each { entry ->
             if (entry.name.endsWith('.class') && !entry.name.contains('/')) {
                 def name = entry.name - '.class'
-
                 if (name.size() > 2) {
                     names << name
                 }

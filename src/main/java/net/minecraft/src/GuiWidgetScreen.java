@@ -46,7 +46,7 @@ public class GuiWidgetScreen extends Widget
             {
                 GuiWidgetScreen.instance = new GuiWidgetScreen();
                 GuiWidgetScreen.instance.renderer = new LWJGLRenderer();
-                String themename = "twlGuiTheme.xml";
+                String themename = "assets/recobbled_modloader/guiapi/twlGuiTheme.xml";
                 GuiWidgetScreen.instance.gui = new GUI(
                         GuiWidgetScreen.instance,
                         GuiWidgetScreen.instance.renderer, new LWJGLInput());
