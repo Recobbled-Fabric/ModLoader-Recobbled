@@ -16,8 +16,8 @@ public class ImageManagerMixin {
 	@Definition(id = "URL", type = URL.class)
 	@Expression("new URL(?, ?)")
 	@WrapOperation(method = "parseImages(Lde/matthiasmann/twl/utils/XMLParser;Ljava/net/URL;)V", at = @At("MIXINEXTRAS:EXPRESSION"))
-	private URL fix$fontURL(URL context, String spec, Operation<URL> original) throws URISyntaxException, MalformedURLException {
+	private URL fix$fontURL(URL context, String spec, Operation<URL> original) throws MalformedURLException {
 		URL ogPath = getClass().getClassLoader().getResource(spec);
-		return ogPath != null ? ogPath : context.toURI().resolve(spec).toURL();
+		return ogPath != null ? ogPath : new URL(context, spec);
 	}
 }
