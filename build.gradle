@@ -41,8 +41,9 @@ repositories {
     }
 }
 
+import xyz.wagyourtail.unimined.internal.minecraft.MinecraftProvider
+
 unimined {
-    useGlobalCache = false
 
     minecraft {
         version 'b1.7.3'
@@ -58,10 +59,7 @@ unimined {
                     c(name, path, path)
                 }
 
-                //jarClasses('custom_jar/modloader-recobbled-1.6.jar').each(mapClass)
-                //["PlayerAPI", "PlayerBase"].each(mapClass)
-                jarClasses('custom_jar/recobbled-1.6_03.jar').each(mapClass)
-
+                jarClasses(file('custom_jar/recobbled-1.6_03.jar')).each(mapClass)
                 fileTree(
                         dir: project.file('src/main/java/net/minecraft/src'),
                         include: '**/*.java'
@@ -80,12 +78,23 @@ unimined {
             }
         }
 
-        MinecraftProvider minecraftProvider = delegate as MinecraftProvider
+        MinecraftProvider mc = delegate as MinecraftProvider
+
+        runs {
+            config("client") {
+                javaVersion = JavaVersion.VERSION_1_8
+                jvmArgs "-Dfabric.gameVersion=${mc.version}",
+                        "-Dfabric.runtimeMappingNamespace=named"
+            }
+        }
 
         merged {
-            customPatcher(new FabricWithoutIntermediary(project, minecraftProvider)) {
-                it.loader '0.19.5'
-                it.accessWidener(project.file("src/main/resources/modloadermp.accessWidener"))
+            fabric {
+                loader '0.19.5'
+                accessWidener(project.file("src/main/resources/" + project.property('access_widener')))
+                customIntermediaries = true
+                prodNamespace "official"
+                devMappings = null
             }
             jarMod {
                 enableJarModAgent = false
@@ -97,6 +106,7 @@ unimined {
 dependencies {
     jarMod name: "recobbled", version: "1.6_03"
     implementation(include(name: "GuiAPILib", version: "1.0"))
+    implementation("xyz.wagyourtail.unimined:unimined:1.4.2-SNAPSHOT")
 }
 
 processResources {
@@ -107,13 +117,6 @@ processResources {
     }
 }
 
-import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
-import xyz.wagyourtail.unimined.internal.minecraft.patch.fabric.OfficialFabricMinecraftTransformer
-import xyz.wagyourtail.unimined.api.runs.RunConfig
-import xyz.wagyourtail.unimined.internal.minecraft.MinecraftProvider
-
-import java.util.zip.ZipFile
-
 tasks.withType(RemapJarTask).configureEach {
     mixinRemap {
         enableBaseMixin()
@@ -121,98 +124,8 @@ tasks.withType(RemapJarTask).configureEach {
     }
 
     doLast {
-        def jarFile = archiveFile.get().asFile
-
-        def tempFile = new File(
-                temporaryDir,
-                jarFile.name + ".tmp"
-        )
-
-        def awPath = "modloadermp.accessWidener"
-
-        def input = new java.util.zip.ZipFile(jarFile)
-        def output = new java.util.zip.ZipOutputStream(
-                new java.io.FileOutputStream(tempFile)
-        )
-
-        try {
-            input.entries().each { entry ->
-                def bytes = input.getInputStream(entry).bytes
-
-                if (entry.name == awPath) {
-                    def text = new String(bytes, "UTF-8")
-
-                    //System.out.println(text)
-                    text = text.replaceFirst(
-                            "intermediary",
-                            "official"
-                    )
-
-
-                    bytes = text.getBytes("UTF-8")
-                }
-
-                def newEntry = new java.util.zip.ZipEntry(entry.name)
-
-                newEntry.time = entry.time
-                newEntry.method = entry.method
-
-                output.putNextEntry(newEntry)
-                output.write(bytes)
-                output.closeEntry()
-            }
-        } finally {
-            output.close()
-            input.close()
-        }
-
-        if (!jarFile.delete()) {
-            throw new GradleException(
-                    "Could not replace remapped jar: ${jarFile}"
-            )
-        }
-
-        if (!tempFile.renameTo(jarFile)) {
-            throw new GradleException(
-                    "Could not rename temporary jar to: ${jarFile}"
-            )
-        }
+        fixAccessWidener(archiveFile.get().asFile, temporaryDir)
     }
-}
-
-def jarClasses(String jarPath) {
-    def file = file(jarPath)
-    def zip = new ZipFile(file)
-    def names = []
-    zip.entries().each { entry ->
-        if (entry.name.endsWith('.class') && !entry.name.contains('/')) {
-            def name = entry.name - '.class'
-            if (name.size() > 2) names << name
-        }
-    }
-    zip.close()
-    return names
-}
-
-class FabricWithoutIntermediary extends OfficialFabricMinecraftTransformer{
-
-    FabricWithoutIntermediary(Project project, MinecraftProvider provider) {
-        super(project, provider)
-        customIntermediaries = true
-        prodNamespace("official")
-    }
-
-    @Override
-    void applyRunTransform(RunConfig config) {
-        super.applyRunTransform(config)
-        config.jvmArgs("-Dfabric.gameVersion=${provider.version}")
-    }
-
-    @Override
-    java.nio.file.Path getDevMappings() {
-        return null;
-    }
-
 }
 
 publishing {
@@ -228,4 +141,63 @@ publishing {
             from components.java
         }
     }
+}
+
+import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
+
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+import java.util.zip.ZipOutputStream
+
+def fixAccessWidener(File jarFile, File temporaryDir) {
+    def tempFile = new File(temporaryDir, jarFile.name + ".tmp")
+    def awPath = project.property('access_widener')
+    def input = new ZipFile(jarFile)
+    def output = new ZipOutputStream(new FileOutputStream(tempFile))
+    try {
+        input.entries().each { entry ->
+            def bytes = input.getInputStream(entry).bytes
+            if (entry.name == awPath) {
+                def text = new String(bytes, "UTF-8")
+                text = text.replaceFirst("intermediary","official")
+                bytes = text.getBytes("UTF-8")
+            }
+            def newEntry = new ZipEntry(entry.name)
+            newEntry.time = entry.time
+            newEntry.method = entry.method
+            output.putNextEntry(newEntry)
+            output.write(bytes)
+            output.closeEntry()
+        }
+    } finally {
+        output.close()
+        input.close()
+    }
+    if (!jarFile.delete()) {
+        throw new GradleException("Could not replace remapped jar: ${jarFile}")
+    }
+    if (!tempFile.renameTo(jarFile)) {
+        throw new GradleException("Could not rename temporary jar to: ${jarFile}")
+    }
+}
+
+def jarClasses(File file) {
+    def zip = new ZipFile(file)
+    def names = []
+
+    try {
+        zip.entries().each { entry ->
+            if (entry.name.endsWith('.class') && !entry.name.contains('/')) {
+                def name = entry.name - '.class'
+
+                if (name.size() > 2) {
+                    names << name
+                }
+            }
+        }
+    } finally {
+        zip.close()
+    }
+
+    return names
 }
